@@ -56,8 +56,11 @@ class ActiveCell<Cell: Types.CellBase, Value> extends Component<
         prevProps.cell &&
         prevProps.cell !== this.state.cellBeforeUpdate
       ) {
+        const coords = typeof prevProps.row === 'undefined'
+          ? undefined
+          : { row: prevProps.row, column: prevProps.column };
         commit([
-          { prevCell: this.state.cellBeforeUpdate, nextCell: prevProps.cell }
+          { prevCell: this.state.cellBeforeUpdate, nextCell: prevProps.cell, coords }
         ]);
       }
     }

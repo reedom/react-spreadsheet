@@ -89,7 +89,7 @@ export default class SpreadsheetStateProvider<
 
         if (state.lastCommit && state.lastCommit !== prevState.lastCommit) {
           for (const change of state.lastCommit) {
-            onCellCommit(change.prevCell, change.nextCell, state.active);
+            onCellCommit(change.prevCell, change.nextCell, change.coords || state.active);
           }
         }
 

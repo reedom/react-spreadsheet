@@ -156,13 +156,14 @@ export async function paste<Cell: Types.CellBase>(
         acc.commit || ([]: $PropertyType<Types.StoreState<Cell>, "lastCommit">);
       const nextRow = row - minPoint.row + state.active.row;
       const nextColumn = column - minPoint.column + state.active.column;
+      const coords = { row: nextRow, column: nextColumn };
 
       const nextData = state.cut
         ? Matrix.unset(row, column, acc.data)
         : acc.data;
 
       if (state.cut) {
-        commit = [...commit, { prevCell: value, nextCell: undefined }];
+        commit = [...commit, { prevCell: value, nextCell: undefined, coords }];
       }
 
       if (!Matrix.has(nextRow, nextColumn, paddedData)) {
@@ -174,7 +175,8 @@ export async function paste<Cell: Types.CellBase>(
         ...commit,
         {
           prevCell: currentValue,
-          nextCell: value
+          nextCell: value,
+          coords
         }
       ];
 
@@ -239,7 +241,7 @@ export const clear = <Cell: Types.CellBase>(state: Types.StoreState<Cell>) => {
         const cell = Matrix.get(point.row, point.column, state.data);
         return {
           prevCell: cell,
-          nextCell: { ...cell, value: "" }
+          nextCell: { ...cell, value: "", coords: { row, column }  }
         };
       })
     )
