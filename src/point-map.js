@@ -153,3 +153,10 @@ export function filter<T>(
 export function isEmpty(map: PointMap<any>): boolean {
   return Object.keys(map).length === 0;
 }
+
+/** Returns top-left coordinates. The input map should no be empty. */
+export function origin(map: PointMap<any>): Types.Point {
+  const row = parseInt(Object.keys(map)[0]);
+  const column = parseInt(Object.keys(map[row])[0]);
+  return { row: row, column: column };
+}

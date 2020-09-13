@@ -107,6 +107,7 @@ export function setCellDimensions(
 
 export function copy<T>(state: Types.StoreState<T>) {
   return {
+    origin: PointMap.origin(state.selected),
     copied: PointSet.reduce(
       (acc, point) =>
         PointMap.set<T>(
@@ -145,6 +146,7 @@ export async function paste<Cell: Types.CellBase>(
 
   const requiredRows = state.active.row + Matrix.getSize(copiedMatrix).rows;
   const paddedData = Matrix.padMatrix(state.data, requiredRows);
+  const origin = state.origin;
 
   const { data, selected, commit } = PointMap.reduce(
     (acc: Accumulator, value, { row, column }): Accumulator => {
@@ -156,13 +158,13 @@ export async function paste<Cell: Types.CellBase>(
         acc.commit || ([]: $PropertyType<Types.StoreState<Cell>, "lastCommit">);
       const nextRow = row - minPoint.row + state.active.row;
       const nextColumn = column - minPoint.column + state.active.column;
-      const coords = { row: nextRow, column: nextColumn };
 
       const nextData = state.cut
-        ? Matrix.unset(row, column, acc.data)
+        ? Matrix.unset(origin.row + row, origin.column + column, acc.data)
         : acc.data;
 
       if (state.cut) {
+        const coords = { row: origin.row + row - minPoint.row, column: origin.column + column - minPoint.column};
         commit = [...commit, { prevCell: value, nextCell: undefined, coords }];
       }
 
@@ -176,7 +178,7 @@ export async function paste<Cell: Types.CellBase>(
         {
           prevCell: currentValue,
           nextCell: value,
-          coords
+          coords: { row: nextRow, column: nextColumn }
         }
       ];
 
